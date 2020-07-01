@@ -43,7 +43,13 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
                 value: FilterOptions.All,
               ),
             ],
-        )
+          ),
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: (){
+              
+            },
+          )
         ],
       ),
       body: ProductGrid(_showFavoriteOnly),
