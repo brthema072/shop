@@ -19,6 +19,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _imageUrlController = TextEditingController();
   final _form = GlobalKey<FormState>();
   final _formData = Map<String, Object>();
+  bool _isLoading = false;
 
   @override
   void initState(){
@@ -76,7 +77,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     _imageUrlFocusNode.dispose();
   }
 
-  void _saveForm(){
+  Future<void> _saveForm() async{
     bool isValid = _form.currentState.validate();
     
     if(!isValid){
@@ -93,13 +94,45 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       imageUrl: _formData['urlImage']
     );
     
+    setState(() {
+      _isLoading = true;  
+    });
+    
     final products = Provider.of<Products>(context, listen: false);
+
     if(_formData['id']==null){
-      products..addProduct(product);
+      try{
+        await products.addProduct(product);
+        Navigator.of(context).pop();
+      }catch(error){
+        await showDialog<Null>(
+          context: context,
+          builder: (ctx)=> AlertDialog(
+            title: Text('Ocorreu um erro!'),
+            content:Text('Ocorreu um erro para salvar o produto!'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Ok'),
+                onPressed: ()=> Navigator.of(context).pop(),
+              )
+            ],
+          ),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;  
+        });
+      }
+      
     }else{
       products.updateProdut(product);
+
+      setState(() {
+        _isLoading = false;  
+      });
+
+      Navigator.of(context).pop();
     }
-    Navigator.of(context).pop();
   }
 
   @override
@@ -116,7 +149,11 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           )
         ],
       ),
-      body: Padding(
+      body: _isLoading
+      ? Center(
+          child: CircularProgressIndicator(),
+        )
+      : Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
           key: _form,
@@ -227,11 +264,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     alignment: Alignment.center,
                     child: _imageUrlController.text.isEmpty
                     ? Text('Informe a URL')
-                    : FittedBox(
-                        child: Image.network(
-                          _imageUrlController.text,
-                          fit: BoxFit.cover,
-                        ),
+                    : Image.network(
+                        _imageUrlController.text,
+                        fit: BoxFit.cover,
                       ),
                   )
                 ],
