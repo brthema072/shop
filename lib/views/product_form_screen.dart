@@ -100,10 +100,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     
     final products = Provider.of<Products>(context, listen: false);
 
-    if(_formData['id']==null){
       try{
-        await products.addProduct(product);
-        Navigator.of(context).pop();
+        if(_formData['id']==null){
+          await products.addProduct(product);
+        }else{
+          await products.updateProdut(product);
+        }
+          Navigator.of(context).pop();
       }catch(error){
         await showDialog<Null>(
           context: context,
@@ -123,16 +126,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           _isLoading = false;  
         });
       }
-      
-    }else{
-      products.updateProdut(product);
-
-      setState(() {
-        _isLoading = false;  
-      });
-
-      Navigator.of(context).pop();
-    }
   }
 
   @override
