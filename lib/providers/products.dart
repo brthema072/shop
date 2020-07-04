@@ -96,7 +96,7 @@ class Products with ChangeNotifier{
       _items.removeWhere((prod) => prod.id == id);
       notifyListeners();
 
-      final response = await http.delete("$_baseUrl/${product.id}");
+      final response = await http.delete("$_baseUrl/${product.id}.json");
       
       if(response.statusCode >= 400){
         _items.insert(index, product);
