@@ -43,6 +43,18 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
       appBar: AppBar(
         title: Center(child: new Text('Minha Loja', textAlign: TextAlign.center)),
         actions: <Widget>[
+          Consumer<Cart>(
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: (){
+                Navigator.of(context).pushNamed(AppRoutes.CART);
+              },
+            ),
+            builder: (_, cart, child) => Badge(
+              value: cart.itemsCount.toString(),
+              child: child,
+            ),
+          ),
           PopupMenuButton(
             icon: Icon(Icons.more_vert),
             onSelected: (FilterOptions selectedValue){
@@ -64,18 +76,6 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
                 value: FilterOptions.All,
               ),
             ],
-          ),
-          Consumer<Cart>(
-            child: IconButton(
-              icon: Icon(Icons.shopping_cart),
-              onPressed: (){
-                Navigator.of(context).pushNamed(AppRoutes.CART);
-              },
-            ),
-            builder: (_, cart, child) => Badge(
-              value: cart.itemsCount.toString(),
-              child: child,
-            ),
           )
         ],
       ),
